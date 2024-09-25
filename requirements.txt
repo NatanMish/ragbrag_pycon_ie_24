@@ -5,3 +5,4 @@ llama-index==0.11.8
 llama-index-vector-stores-faiss==0.2.1
 faiss-cpu==1.8.0.post1
 python-dotenv==1.0.1
+deepeval==1.2.9
