@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Build a RAG to Brag About</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/dracula.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h2 class="r-fit-text">Build a RAG to Brag About</h2>
+					<p>Natan Mish</p>
+					<p style="font-size: large;">GitHub repository: <a href="https://github.com/NatanMish/ragbrag_pycon_ie_24/">https://github.com/NatanMish/ragbrag_pycon_ie_24/</a></p>
+					<img src="https://s3.python.ie/images/image_6.width-500.png" alt="PyCon Ireland Logo" style="width: auto; height: auto;">
+				</section>
+				<section>
+					<h2>Agenda</h2>
+					<ul style="font-size: medium;">
+						<li>Introduction</li>
+						<li>Tools</li>
+						<li>Data</li>
+						<li>What is RAG?</li>
+						<ul>
+							<li>Use Cases</li>
+							<li>Architecture</li>
+							<li>Build a simple RAG with Llamaindex and FAISS</li>
+							<li>What are the limitations of the standard RAG?</li>
+						</ul>
+						<li>Methods for improving RAG</li>
+						<ul>
+							<li>Hypothetical Document Embedding (HyDE)</li>
+							<li>Query Transformations</li>
+							<li>Contextual Chunk Headers</li>
+						</ul>
+						<li>Evaluation</li>
+						<li>Other methods</li>
+						<li>Why not fine-tune?</li>
+						<li>What have we covered?</li>
+						<li>Q&A</li>
+					</ul>
+				</section>
+				<section>
+					<h2>About Me</h2>
+					<p align="left" style="font-size: x-large;">
+						Hello! I'm Natan Mish, a Machine Learning Engineer at <a href="https://www.zimmerbiomet.com/en">Zimmer Biomet</a>, where I work on developing and deploying machine learning models for medical devices. My academical background is in Data Science and Economics and have worked in various industries, including finance, telecommunications, and transportation.
+					</p>
+					<p align="left" style="font-size: x-large;">
+						I am a member of the scoping committee for <a href="https://datakind.org.uk/">DataKind UK</a>, a charity that helps other charities use data science to improve their operations.
+					</p>
+					<p align="left" style="font-size: x-large;">
+						Python conferences are my favorite events, and I have spoken at <a href="https://pydata.org/london2024/">PyData London</a>, <a href="https://ep2024.europython.eu/">EuroPython</a> and this is my first time at PyCon Ireland. I like to learn and explore new technologies and share my knowledge with others.
+					</p>
+					<h4>Scan to Connect</h4>
+					<img src="images/QR_code.JPG" alt="QR Code" style="width: 150px; height: auto;">
+					<img src="https://media.licdn.com/dms/image/v2/D4E03AQHfhD2GwJw0ZA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1685690405626?e=1735171200&v=beta&t=C1dpEBPwaZPsY8JOobfnQMlE4yWnJkeIAoqsoi3u41c" alt="My Picture" style="width: 150px; height: auto;">
+				</section>
+				<section>
+					<h2>Tools</h2>
+					<ul>
+						<li style="display: flex; align-items: center;">
+							Jupyter Notebooks 
+							<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn5qoh2GS_WbBtD2Zz6I9z8JaagZ9zEoLlNw&s" alt="Jupyter Logo" style="width: 40px; height: auto; margin-left: 10px;">
+						</li>
+						<li style="display: flex; align-items: center;">
+							Llamaindex 
+							<img src="https://media.licdn.com/dms/image/v2/D560BAQFbVTDw-oWXmw/company-logo_200_200/company-logo_200_200/0/1681327675102?e=2147483647&v=beta&t=R9OFpwpWNWEe7kwjOsCxMTYn2gpdxcpUTGUjm40cpvw" alt="Llamaindex Logo" style="width: 40px; height: auto; margin-left: 10px;">
+						</li>
+						<ul style="font-size: small;">
+							<li>Alternatively: LangChain</li>
+						</ul>
+						<li style="display: flex; align-items: center;">
+							FAISS
+							<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSd69cIjDCayFutPxAvAzoAbaj6LMyEICEgEw&s" alt="FAISS Logo" style="width: 40px; height: auto; margin-left: 10px;">
+						</li>
+						<ul style="font-size: small;">
+							<li>Alternatively: Qdrant, Pinecone, Chroma</li>
+						</ul>
+						<li style="display: flex; align-items: center;">
+							Deepeval
+							<img src="https://media.licdn.com/dms/image/v2/D560BAQFogqXz2yr1VQ/company-logo_200_200/company-logo_200_200/0/1698938769821/confident_ai_logo?e=2147483647&v=beta&t=4Ot5C3a5yYpjerH4nltzMBWELrq0NQKRptBWo9mRaWI" alt="Deepeval Logo" style="width: 40px; height: auto; margin-left: 10px;">
+						</li>
+						<ul style="font-size: small;">
+							<li>Alternatively: ML Flow, LangSmith</li>
+					</ul>
+				</section>
+				<section>
+					<section>
+					<h3>UK General Elections 2024 Manifestos</h3>
+					<img src="https://static01.nyt.com/images/2024/08/04/multimedia/04uk-blog-antics-03-plvt/04uk-blog-antics-03-plvt-googleFourByThree.jpg" alt="UK General Elections 2024" style="width: 500px; height: auto;">
+					</section>
+					<section>
+						<img src="https://www.caabu.org/sites/default/files/styles/large/public/images/visual/polparties.png?itok=wxAeI-lm" alt="UK Political Parties" style="width: 500px; height: auto;">
+					</section>
+					<section>
+						<h3>Parsing is a pain</h3>
+						<p style="font-size: medium;">Files can be stored in different formats, such as PDF, Word, HTML, and plain text. Some context is inferred from the structure of the document, such as headings, bullet points, and tables. The text can be extracted using OCR, but the structure might be lost.</p>
+						<p style="font-size: medium;">We will demonstrate some tools that can overcome these challenges and help you build a RAG to Brag About.</p>
+						<p style="display: flex; justify-content: space-between;">
+							<img src="images/pdf_screenshot_1.png" alt="PDF Screenshot" style="width: 49%; height: 49%;">
+							<img src="images/pdf_screenshot_2.png" alt="PDF Screenshot" style="width: 25%; height: 25%;">
+						</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>Everyones talking about RAG</h3>
+						<iframe src="https://giphy.com/embed/H3LbIGBsYsEukxDVfR" width="480" height="269" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p>Is it though? I'll let you decide</p>
+					</section>
+					<section>
+						<h3>Retrieval Augmented Generation</h3>
+						<p>RAG is an AI framework that combines the strengths of traditional information retrieval systems (such as search and databases) with the capabilities of generative large language models (LLMs). By combining your data and world knowledge with LLM language skills, grounded generation is more accurate, up-to-date, and relevant to your specific needs.</p>
+					</section>
+					<section>
+						<h3>Use Cases</h3>
+						<ul>
+							<li>
+								<p>Medical</p>
+								<p style="font-size: medium;">Using patient medical history and current symptoms to generate a diagnosis</p>
+							</li>
+							<li>
+								<p>Legal</p>
+								<p style="font-size: medium;">Using legal documents and case law to generate a legal brief</p>
+							</li>
+							<li>
+								<p>Finance</p>
+								<p style="font-size: medium;">Using financial data, market trends, profit and loss statements to generate portfolio recommendations</p>
+							</li>
+							<li>
+								<p>Education</p>
+								<p style="font-size: medium;">Using student data, curriculum, and learning outcomes to generate personalized learning plans</p>
+							</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Architecture</h3>
+						<img src="images/RAG_architecture.png" alt="RAG Architecture" style="width: 500px; height: auto;">
+					</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
