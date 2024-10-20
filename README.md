@@ -3,6 +3,24 @@
 ## Description
 This repository contains code and notebooks for the RAGBRAG project presented at PyCon Ireland 24. The project describes how to set up a LllamIndex RAG pipeline over a dataset of documents and various methods on how to improve its performance.
 
+## Presentation
+To run the reveal.js presentation, follow these steps:
+
+1. Ensure you have [Node.js](https://nodejs.org/) installed on your machine.
+2. Navigate to the `reveal.js/` directory:
+    ```bash
+    cd reveal.js
+    ```
+3. Install the necessary dependencies using npm:
+    ```bash
+    npm install
+    ```
+4. Start the presentation server:
+    ```bash
+    npm start
+    ```
+5. Open your web browser and go to `http://localhost:8000` to view the presentation.
+
 ## Data
 Documents used for this project are UK political parties manifestos for the 2024 UK general election.
 
