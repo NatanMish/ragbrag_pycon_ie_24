@@ -45,7 +45,7 @@
 						<li>Evaluation</li>
 						<li>Other methods</li>
 						<li>Why not fine-tune?</li>
-						<li>What have we covered?</li>
+						<li>Future of RAG</li>
 						<li>Q&A</li>
 					</ul>
 				</section>
@@ -297,7 +297,7 @@
 					<p align="left" style="font-size: large;">HyDE aims to improve document retrieval by generating a hypothetical document based on the user's query. This approach is designed to bridge the gap between short, potentially imperfect user queries and longer, well-written documents containing the relevant information</p>
 					<p>How HyDE Works</p>
 					<ol align="left" style="font-size: large;">
-						<li><strong>Query Transformation:</strong> When a user submits a query, HyDE uses a language model (like GPT-3) to generate a hypothetical document that represents an ideal answer to the query.</li>
+						<li><strong>Hypothetical Document Generation:</strong> When a user submits a query, HyDE uses a language model (like GPT-3) to generate a hypothetical document that represents an ideal answer to the query.</li>
 						<li><strong>Embedding Generation:</strong> This hypothetical document is then converted into an embedding vector using a pre-trained embedding model.</li>
 						<li><strong>Similarity Search:</strong> The system searches for real documents in the corpus that are most similar to the encoded hypothetical document, rather than directly matching the original query.</li>
 					</ol>
@@ -362,6 +362,7 @@
 						</p>
 					</section>
 					<section>
+						<h3>Hypothetical Document Example</h3>
 						<p>
 							<pre><code class="language-python" data-trim data-noescape data-line-numbers="">
 								retriever = vector_store_index.as_retriever(similarity_top_k=2)
@@ -373,37 +374,543 @@
 								)
 
 								results, hypothetical_doc = hyde_retriever.retrieve(test_query)
-								print(results)
-								print(hypothetical_doc)
 							</code>
 							</pre>
 						</p>
-						<p>
-							<p style="font-size: small;" align="left">
-								'DECISIONS MADE IN SCOTLAND, FOR SCOTLAND. 21SNP General Election Manifesto 2024<br>
-								Ban new coal licences. Follow the SNP Scottish Government’s lead and commit to no support for new coal mines, which would undermine our action to reach net zero.<br>
-								Provide fair funding for climate. Scotland has over two thirds of the UK’s peatland, and currently plants over 60% of trees in the UK, yet funds restoration and planting within our budget, with no help from the UK Government. Westminster must ensure fair funding flows to devolved nations to enable our, and their, climate ambition given that for the whole of the UK to reach net zero by 2050, Scotland must do so by 2045.<br>
-								Establish a Four Nations Climate Response Group to agree climate plans across the UK that deliver on our net-zero targets and ensure the UK Government stops backtracking on climate ambition.<br>
-								Devolve powers to create a bespoke migration system for Scotland that values those who decide to work, live, study and invest here and allows us to address our specific demographic and economic needs. Introduce a rural visa pilot scheme. Scotland should have full powers over immigration, including the devolution of overseas workers’ employment visas. Until then, it is vital the UK Government acknowledges the distinct demographic challenges we face in Scotland and introduce a pilot to mitigate against labour shortages as a result of a hard Brexit and hostile immigration policies.<br>
-								Mitigate the harm of Brexit on productivity by reviewing immigration rules and expanding shortage occupation lists, so businesses have access to the workforce they need. Provide sustainable funding for farming. Despite numerous requests, Scotland has had no commitment from Westminster on any future funding for farming after 2025. The UK Government must increase funding for farming – to at least pre-Brexit levels - and provide certainty through multi-annual funding frameworks. Agree a veterinary agreement with the EU to ease exports and imports.<br>
-								Give Scotland our rightful share of marine funding'
-							</p>
-							<p style="font-size: small;" align="left">
-								'20BUILDING A FAIRER, GREENER ECONOMY Under the SNP, Scotland’s economy is already one of the best performing parts of the UK with both GDP per head and productivity growing faster in Scotland than the UK as a whole. But we want to go further. Our commitment to tackling the twin crises of climate change and nature loss is unwavering and we believe emissions reduction and economic prosperity go hand in hand. We want to share in the enormous economic opportunities of the global transition to net zero. SNP MPs will demand the UK Government:<br>
-								Bring forward an immediate emergency budget following the election to reverse cuts to public spending and deliver meaningful investment in economic growth, including green energy.<br>
-								Work at pace with the Acorn Project and Scottish Cluster to secure the fastest possible deployment following the UK Government’s failure to support the Acorn carbon capture, utilisation and storage project at track 1. Urgent clarity is required to restore investor confidence, boost economic opportunities and make progress against our net zero obligations. Modernise the Contracts for Difference scheme to enable the stable deployment of Scotland’s renewable energy pipeline.<br>
-								Take an evidence-based approach to oil and gas. The UK Government is the decision-maker on new oil and gas licences. We believe any further extraction must be consistent with our climate obligations and take due account of energy security considerations. Decisions must be made on a rigorously evidence-led, case-by-case basis, through a robust climate compatibility assessment.Support the North East and the Just Transition. North Sea oil and gas is naturally declining, and as the transition to new industries gathers pace, we are clear that the workers, families and people of that industry and the North East must not be abandoned. We are supporting them with the £500 million North-East Transition Fund - a fund the UK Government must now at least match. Deliver a sustainable future for Grangemouth.<br>
-								The future of the Grangemouth complex must be secured and a just transition delivered for the workforce. The UK Government must recognise the importance of the whole site to Scotland’s economy and communities and must invest in a sustainable future.'
-							</p>
-							<p style="font-size: small;" align="left">
-								"The SNP's policy on climate change is centered around the goal of achieving net-zero greenhouse gas emissions by 2045. This ambitious target is in line with the recommendations of the Intergovernmental Panel on Climate Change (IPCC) to limit global warming to 1.5 degrees Celsius above pre-industrial levels. To achieve this target, the SNP has outlined a comprehensive plan that includes a range of measures to reduce emissions across all sectors of the economy.<br><br>
-								One key aspect of the SNP's climate change policy is the promotion of renewable energy sources. The party has committed to increasing the share of renewable energy in Scotland's electricity mix to 100% by 2030. This will involve investing in wind, solar, and hydroelectric power, as well as supporting the development of new technologies such as tidal and wave energy. The SNP also aims to phase out the use of fossil fuels for electricity generation, with a particular focus on closing coal-fired power stations.<br><br>
-								In addition to promoting renewable energy, the SNP is also committed to improving energy efficiency in homes and buildings. The party has set a target to upgrade all homes in Scotland to at least an Energy Performance Certificate (EPC) rating of C by 2030. This will involve providing financial support for energy efficiency measures such as insulation, double glazing, and efficient heating systems. The SNP also plans to introduce regulations to ensure that all new buildings meet high energy efficiency standards.<br><br>
-								The SNP's climate change policy also includes measures to reduce emissions from transport, industry, and agriculture. The party has pledged to invest in public transport infrastructure, promote the use of electric vehicles, and support the development of low-carbon technologies in industry. The SNP also aims to promote sustainable farming practices and reduce emissions from agriculture through measures such as tree planting and peatland restoration.<br><br>
-								Overall, the SNP's policy on climate change is ambitious and comprehensive, with a strong focus on reducing emissions across all sectors of the economy. By setting a target of achieving net-zero emissions by 2045, the SNP is demonstrating its commitment to tackling climate change and protecting the environment for future generations."
-							</p>
+					</section>
+					<section>
+						<h4>Generated Hypothetical Document</h4>
+						<p style="font-size: small;" align="left">
+							The Scottish National Party (SNP) has a strong commitment to tackling climate change and has set ambitious targets to reduce greenhouse gas emissions. The SNP's policy on climate change is centered around transitioning to a low-carbon economy, investing in renewable energy sources, and promoting sustainable practices.One of the key initiatives of the SNP is the Climate Change (Emissions Reduction Targets) (Scotland) Act, which sets legally binding targets to reduce emissions by at least 75% by 2030 and achieve net-zero emissions by 2045. The SNP also supports the development of renewable energy sources such as wind, solar, and hydro power, with the goal of generating 100% of Scotland's electricity from renewable sources by 2020.In addition to reducing emissions and promoting renewable energy, the SNP is committed to promoting sustainable practices in areas such as transportation, agriculture, and land use. The SNP has introduced policies to encourage the use of electric vehicles, support sustainable farming practices, and protect Scotland's natural environment.Overall, the SNP's policy on climate change is comprehensive and ambitious, with a focus on reducing emissions, promoting renewable energy, and fostering sustainable practices across all sectors of the economy.
 						</p>
 					</section>
+					<section>
+						<h4>Retrieved Documents</h4>
+						<p align="left">
+							<li style="font-size: small;">DECISIONS MADE IN SCOTLAND, FOR SCOTLAND.      21SNP General Election Manifesto  2024Ban new coal licences. Follow the SNP Scottish Government’s lead and commit to no support for new coal mines, which would undermine  our action to reach net zero.Provide fair funding for climate. Scotland has over two thirds of the UK’s peatland, and currently plants over 60% of trees in the UK, yet funds restoration and planting within our budget, with no help from the UK Government. Westminster must ensure fair funding flows to devolved nations to enable our, and their, climate ambition given that for the whole of the UK to reach net zero by 2050, Scotland must do so  by 2045.Establish a Four Nations Climate Response Group to agree climate plans across the UK  that deliver on our net-zero targets and ensure  the UK Government stops backtracking on climate ambition.</li>
+							<li style="font-size: small;">20BUILDING A FAIRER, GREENER ECONOMY Under the SNP, Scotland’s economy is already one of the best performing parts of the UK with both GDP per head and productivity growing faster in Scotland than the UK as a whole.  But we want to go further. Our commitment to tackling the twin crises of climate change and nature loss is unwavering and we believe emissions reduction and economic prosperity go hand in hand. We want  to share in the enormous economic opportunities of the global transition to net zero. SNP MPs will demand the UK Government:Bring forward an immediate emergency budget following the election to reverse cuts to public spending and deliver meaningful investment in economic growth, including green energy.Work at pace with the Acorn Project and Scottish Cluster to secure the fastest possible deployment following the UK Government’s failure to support the Acorn carbon capture, utilisation and storage project at track 1.</li>
+						</p>
+					</section>
+					<section>
+						<p>
+							<img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3RvczF0Y2VodmJxbWxiM25lNm9qMXM1b2FscDd3dDRmZHZxeXJkbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6vY2Ef4cKfRf8loc/giphy.webp" alt="What Could Go Wrong?" style="width: 500px; height: auto;">
+						</p>
+					</section>
+					<section>
+						<h3>LLM's already have some knowledge in them...</h3>
+						<p align="left">If some or all of the information you are after is publicly available, the LLM might have been trained on it. This means that the generated document will be based on publicly available information and could potentially bias the results. One way to mitigate this is to configure the retrieval process to retrieve as many document as possible</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>Query Transformations</h3>
+						<p style="font-size: large;">
+							RAG systems often face challenges in retrieving the most relevant information, especially when dealing with complex or ambiguous queries. These query transformation techniques address this issue by reformulating queries to better match relevant documents or to retrieve more comprehensive information.
+						</p>
+						<p>
+							<ul style="font-size: large;">
+								<li>Query Rewriting</li>
+								<li>Step-back Prompting</li>
+								<li>Sub-query Decomposition</li>
+							</ul>
+						</p>
+					</section>
+					<section>
+						<h3>Query Rewriting</h3>
+						<p align="left" style="font-size: large;">
+							Query rewriting involves transforming the original query into multiple variations that are more likely to retrieve relevant documents. This technique can be used to expand the scope of the query, add synonyms or related terms, or rephrase the query to improve retrieval accuracy.
+						</p>
+						<p>
+							<pre>
+								<code class="language-python" data-trim data-noescape data-line-numbers="1-2|4|6-12|14-15|17-21|23">
+									from llama_index.core import PromptTemplate
+									from llama_index.llms.openai import OpenAI
+
+									test_query = "What is the SNP's policy on climate change?"
+
+									query_gen_str = """\
+									You are an AI assistant tasked with reformulating user 
+									queries to improve retrieval in a RAG system. Given the 
+									original query, rewrite it to be more specific, detailed, 
+									and likely to retrieve relevant information.
+									Original Query: {query}
+									Rewritten Query:"""
+
+									query_gen_prompt = PromptTemplate(query_gen_str)
+									llm = OpenAI(model="gpt-4o", temperature=0, max_tokens=4000)
+
+									def generate_query(query: str, llm, query_gen_prompt):
+										response = llm.predict(
+											query_gen_prompt, query=query
+										)
+										return response
+
+									generated_query = generate_query(test_query, llm, query_gen_prompt)
+								</code>
+							</pre>
+						</p>
+					</section>
+					<section>
+						<h4>Original Query</h4>
+						<p align="left">
+							What is the SNP's policy on climate change?
+						</p>
+						<h4>Generated Query</h4>
+						<p align="left">
+							What specific measures and initiatives does the Scottish National Party (SNP) propose in their policy to address climate change, including their targets for reducing carbon emissions and transitioning to renewable energy sources?
+						</p>
+					</section>
+					<section>
+						<h3>Step-back Prompting</h3>
+						<p align="left" style="font-size: large;">
+							Step-back prompting generates broader, more general queries that can help retrieve relevant background information.
+						</p>
+						<p>
+							<pre>
+								<code class="language-python" data-trim data-noescape data-line-numbers="">
+									test_query = "What is the SNP's policy on carbon emissions?"
+
+									step_back_template = """You are an AI assistant tasked 
+									with generating broader, more general queries to improve 
+									context retrieval in a RAG system. Given the original 
+									query, generate a step-back query that is more general 
+									and can help retrieve relevant background information.
+									Original query: {query}
+									Step-back query:"""
+
+									query_gen_prompt = PromptTemplate(step_back_template)
+
+									generated_query = generate_query(test_query, llm, query_gen_prompt)
+								</code>
+							</pre>
+						</p>
+					</section>
+					<section>
+						<h4>Original Query</h4>
+						<p align="left">
+							What is the SNP's policy on carbon emissions?
+						</p>
+						<h4>Generated Query</h4>
+						<p align="left">
+							What are the general policies and positions of the SNP on environmental issues?
+						</p>
+					</section>
+					<section>
+						<h3>Sub-query Decomposition</h3>
+						<p align="left" style="font-size: large;">
+							Sub-query decomposition involves breaking down the original query into smaller, more specific sub-queries that can be used to retrieve relevant information. This technique can help address complex or ambiguous queries by focusing on individual components of the query.
+						</p>
+						<p>
+							<pre>
+								<code class="language-python" data-trim data-noescape data-line-numbers="">
+									test_query = "What is the Conservative Party's stance on
+									immigration?"
+
+									subquery_decomposition_template = """You are an AI assistant 
+									tasked with breaking down complex queries into simpler 
+									sub-queries for a RAG system. Given the original query,
+									decompose it into 2-4 simpler sub-queries that, when 
+									answered together, would provide a comprehensive response to 
+									the original query.
+									Original query: {query}
+									example: What are the impacts of climate change on the 
+									environment?
+									Sub-queries:
+									1. What are the impacts of climate change on biodiversity?
+									2. How does climate change affect the oceans?
+									3. What are the effects of climate change on agriculture?
+									4. What are the impacts of climate change on human health?"""
+
+									query_gen_prompt = PromptTemplate(subquery_decomposition_template)
+									generated_query = generate_query(test_query, llm, query_gen_prompt)
+								</code>
+							</pre>
+						</p>
+					</section>
+					<section>
+						<h4>Original Query</h4>
+						<p align="left">
+							<ul style="font-size: large;">
+							<li>What is the Conservative Party's stance on immigration?</li>
+							</ul>
+						</p>
+						<h4>Generated Sub-Queries</h4>
+						<p align="left">
+							<ul style="font-size: large;">
+								<li> What are the key policies of the Conservative Party regarding immigration? </li>
+								<li> How has the Conservative Party's stance on immigration evolved over recent years? </li>
+								<li> What are the main arguments the Conservative Party uses to support its immigration policies? </li>
+								<li> How do the Conservative Party's immigration policies compare to those of other major political parties? </li>
+							</ul>
+						</p>
+					</section>
+				</section>
+				<section>
+				<section>
+					<h3>Contextual Chunk Headers</h3>
+					<p align="left">
+						Contextual chunk headers are a technique for improving the relevance and accuracy of retrieved chunks by providing additional context. By adding headers to each chunk with relevant metadata, such as the file name or section title, the similarity search can be more precise. This technique is particularly useful when dealing with large and/or complex documents where the context is essential for understanding the information.
+					</p>
+				</section>
+				<section
+					<p>
+						<pre>
+							<code class="language-python" data-trim data-noescape data-line-numbers="1-5|7-20|21-27|28-35|36-39">
+								from llama_index.core.schema import BaseNode, TransformComponent
+								from llama_index.vector_stores.faiss import FaissVectorStore
+								from llama_index.core.text_splitter import SentenceSplitter
+								from llama_index.core.ingestion import IngestionPipeline
+								from llama_index.core import VectorStoreIndex
+
+								class AddChunkHeader(TransformComponent):
+								"""
+								Transformation to be used within the ingestion pipeline.
+								Cleans clutters from texts.
+								"""
+								def __call__(self, nodes, **kwargs) -> List[BaseNode]:
+									
+									for node in nodes:
+										node_title = node.metadata['file_name']
+										node.text = f"{node_title}\n{node.text}"
+										print(node.text)
+										
+									return nodes
+
+								faiss_index = faiss.IndexFlatL2(embed_dim)
+								vector_store = FaissVectorStore(faiss_index=faiss_index)
+								text_splitter = SentenceSplitter(
+									chunk_size=chunk_size, 
+									chunk_overlap=chunk_overlap
+									)
+								
+								pipeline = IngestionPipeline(
+									transformations=[
+										TextCleaner(),
+										text_splitter,
+										AddChunkHeader(),
+									],
+									vector_store=vector_store,
+								)
+								
+								nodes = pipeline.run(documents=documents)
+								vector_store_index = VectorStoreIndex(nodes)
+								retriever = vector_store_index.as_retriever(similarity_top_k=1)
+							</code>
+						</pre>
+					</p>
+				</section>
+				<section>
+					<h4>Is the retrieval actually better with the headers?</h4>
+					<p>
+						<pre>
+							<code class="language-python" data-trim data-noescape data-line-numbers="">
+								def get_similarity_score_average_from_context(context):
+									similarity_scores = [c.score for c in context]
+									return sum(similarity_scores) / len(similarity_scores)
+								
+								test_query = "Is the labour party planning to increase taxes?"
+								context = retriever.retrieve(test_query)
+								new_similarity_average = get_similarity_score_average_from_context(
+									context
+								)
+
+								with open('../cache/faiss_index.pkl', 'rb') as f:
+    								original_query_store = pickle.load(f)
+								original_retriever = original_query_store.as_retriever(
+									similarity_top_k=1
+								)
+								context = original_retriever.retrieve(test_query)
+								old_similarity_average = get_similarity_score_average_from_context(
+									context
+								)
+
+								print(f"New similarity average: {new_similarity_average}")
+								print(f"Old similarity average: {old_similarity_average}")
+							</code>
+						</pre>
+					</p>
+					<p style="font-size: large;">
+						New similarity average: 0.6926790557182427
+					</p>
+					<p style="font-size: large;">
+						Old similarity average: 0.6819604396914913
+					</p>
+				</section>
+				<section>
+					<img src="https://media1.tenor.com/m/1ZAFl4GEOZYAAAAd/cautious-be-cautious.gif" alt="Be Cautious" style="width: 500px; height: auto;">
+				</section>
+				</section>
+				<section>
+					<h3>Other Methods for improving RAG</h3>
+					<ul>
+						<li>
+							Proposition Chunking
+						</li>
+						<li>
+							Semantic Chunking
+						</li>
+						<li>
+							Fusion Retrieval
+						</li>
+						<li>
+							Intelligent Reranking
+						</li>
+						<li>
+							Hirearchical Indexing
+						</li>
+						<li>
+							Ensemble Retrieval
+						</li>
+						<li>
+							Knowledge Graph Integration
+						</li>
+						<li>
+							Agent Assisted Retrieval
+						</li>
+					</ul>
+				</section>
+				<section>
+					<section>
+						<h2>Evaluation</h2>
+						<p align="left">
+							Evaluating the performance of a RAG system is essential to ensure that it meets the desired objectives and provides accurate and relevant information. A few guidelines for evaluating a RAG system include:
+						</p>
+						</section>
+						<section>
+							<img src="https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0cc9ca6d-a73c-47ff-a1a6-b88b7a0b651b_387x585.jpeg" alt="Evaluation" style="width: auto; height: 500px;">
+						</section>
+						<section>
+							<h3>Benchmark Creation</h3>
+								<ul>
+									<li>Collecting questions that accurately represent real-world user queries</li>
+									<li>Involving domain experts familiar with the knowledge base</li>
+									<li>Ensuring the benchmark covers the full spectrum of expected query types</li>
+								</ul>
+						</section>
+						<section>
+							<h3>Evaluation Metrics</h3>
+								<ul style="font-size: large;">
+									<li>Different metrics for three levels: retrieval, generation, and indexing</li>
+									<li>Sub-optimal performance in an earlier stage can affect the overall performance</li>
+									<li>Retrieval evaluation - Context Precision, Context Recall, Normalized Discounted Cumulative Gain (NDCG)</li>
+									<li>Generation evaluation - Faithfulness, Answer Relevancy</li>
+									<li>Indexing evaluation - Recall, Approximate Nearest Neighbors (ANN)</li>
+								</ul>
+						</section>
+						<section>
+							<h3>LLM-Based Evaluation</h3>
+								<ul>
+									<li>Zero-shot LLM evaluation: Using prompt templates to rate relevance and quality</li>
+									<li>Few-shot LLM evaluation: Providing examples to guide the LLM's assessment</li>
+								</ul>
+						</section>
+						<section>
+							<h3>Parameter Space Optimization</h3>
+								<ul>
+									<li>Indexing parameters: chunk size, embedding model</li>
+									<li>Retrieval parameters: top-k results, preprocessing model</li>
+									<li>Generation parameters: LLM selection, prompt engineering</li>
+								</ul>
+					</section>
+					<section>
+						<h3>Using Deepeval for evaluation</h3>
+						<p align="left" style="font-size: large;">
+							Deepeval is a tool that provides a comprehensive evaluation framework for RAG systems. It allows users to define custom evaluation metrics, compare different models, and generate detailed reports on system performance.
+						</p>
+						<p align="left" style="font-size: large;">
+							First we need to set a list of questions and answers to evaluate the system, This is our ground truth. We will add it as a JSON file which looks like this:
+						</p>
+						<p>
+							<pre>
+								<code class="language-json" data-trim data-noescape>
+									[
+										{
+											"question": "What is the SNP's policy on climate change?",
+											"answer": "The SNP's policy on climate change includes banning 
+											new coal licenses, ensuring fair funding for climate 
+											initiatives, establishing a Four Nations Climate Response 
+											Group to meet net-zero targets, devolving powers for a bespoke 
+											migration system, mitigating the harm of Brexit on 
+											productivity, providing sustainable funding for farming, and 
+											giving Scotland its rightful share of marine funding."
+										},
+										{
+											"question": "What is the Conservative Party......
+								</code>
+							</pre>
+						</p>
+					</section>
+					<section>
+						<h4>Load the questions and answers as test cases</h4>
+						<p>
+							<pre>
+								<code class="language-python" data-trim data-noescape data-line-numbers="">
+									from deepeval.test_case import LLMTestCaseParams, LLMTestCase
+
+									with open('test_cases.json', 'r') as f:
+										qsandas = json.load(f)
+
+									test_cases = []
+									for qna in qsandas:
+										question = qna["question"]
+										gt_answer = qna["answer"]
+										generated_answer = retriever.retrieve(question)
+										retrieved_document = retriever.retrieve(question)
+										test_cases.append(
+											LLMTestCase(
+												input=question,
+												expected_output=gt_answer,
+												actual_output=generated_answer,
+												retrieval_context=retrieved_document
+											)
+										)
+								</code>
+							</pre>
+					</section>
+					<section>
+						<h3>Define Evaluation Metrics</h3>
+						<p>
+							<pre>
+								<code class="language-python" data-trim data-noescape data-line-numbers="1-4|6-20|21-30|31-45">
+									from deepeval.metrics import (
+										GEval, FaithfulnessMetric, ContextualRelevancyMetric
+									)
+									LLM_MODEL = "gpt-4o"
+
+									# G-Eval is a framework that uses LLMs with chain-of-thoughts 
+									# (CoT) to evaluate LLM outputs based on ANY custom criteria
+									correctness_metric = GEval(
+										name="Correctness",
+										model=LLM_MODEL,
+										evaluation_params=[
+											LLMTestCaseParams.EXPECTED_OUTPUT,
+											LLMTestCaseParams.ACTUAL_OUTPUT
+										],
+										evaluation_steps=[
+											"Determine whether the actual output is factually 
+											correct based on the expected output."
+										],
+									)
+
+									# The faithfulness metric measures the quality of your RAG 
+									# pipeline's generator by evaluating whether the 
+									# actual_output factually aligns with the contents of your 
+									# retrieval_context
+									faithfulness_metric = FaithfulnessMetric(
+										threshold=0.7,
+										model=LLM_MODEL,
+										include_reason=False  # Set to True for detailed explanations
+									)
+
+									# The contextual relevancy metric measures the quality of your 
+									# RAG pipeline's retriever by evaluating the overall relevance 
+									# of the information presented in your retrieval_context for a 
+									# given input
+									relevance_metric = ContextualRelevancyMetric(
+										threshold=1,
+										model=LLM_MODEL,
+										include_reason=True
+									)
+								</code>
+							</pre>
+					</section>
+					<section>
+						<h3>Evaluation Example Report No. 1</h3>
+						<p>
+							<pre>
+								<code class="markdown" data-trim data-noescape>
+									Metrics Summary
+
+									- ✅ Correctness (GEval) (score: 1.0, threshold: 0.5, strict: False, evaluation model: gpt-4o, reason: The actual output is factually correct as it matches the expected output verbatim regarding the Green party's promise., error: None)
+									- ✅ Faithfulness (score: 1.0, threshold: 0.7, strict: False, evaluation model: gpt-4o, reason: None, error: None)
+									- ✅ Contextual Relevancy (score: 1.0, threshold: 1.0, strict: False, evaluation model: gpt-4o, reason: The score is 1.00 because the context perfectly aligns with the input. Great job!, error: None)
+
+									For test case:
+
+									- input: By how much does the Green party promise to increase the disability benefits?
+									- actual output: The Green party promises to increase disability benefits by 5%.
+									- expected output: The Green party promises to increase disability benefits by 5%.
+									- context: None
+									- retrieval context: ['• Increase all disability benefits by 5%.\n• Ensure that pensions...']
+								</code>
+							</pre>
+					</section>
+					<section>
+						<h3>Evaluation Example Report No. 2</h3>
+						<p>
+							<pre>
+								<code class="markdown" data-trim data-noescape>
+									Metrics Summary
+
+									- ❌ Correctness (GEval) (score: 0.11393602840389586, threshold: 0.5, strict: False, evaluation model: gpt-4o, reason: The actual output does not mention ending tax breaks for private schools, which is the method of financing in the expected output. It instead discusses reviewing bursaries and other unrelated strategies., error: None)
+									- ✅ Faithfulness (score: 1.0, threshold: 0.7, strict: False, evaluation model: gpt-4o, reason: None, error: None)
+									- ❌ Contextual Relevancy (score: 0.0, threshold: 1.0, strict: False, evaluation model: gpt-4o, reason: The score is 0.00 because the context discusses the current government's achievements and plans in education, but it does not address Labour's specific financing plans for recruiting 6500 new teachers., error: None)
+								  
+								  	For test case:
+								  
+									- input: How is the Labour party planning to finance recruiting 6500 new teachers?
+									- actual output: The Labour party is planning to finance recruiting 6500 new teachers by reviewing the way bursaries are allocated, addressing retention issues, and updating the Early Career Framework to ensure new teachers entering the classroom have or are working towards Qualified Teacher Status.
+									- expected output: The Labour party is planning to finance recruiting 6500 new teachers by ending tax breaks for private schools.
+									- context: None
+									- retrieval context: ['26  Education is the closest thing we have to a silver bullet, which is why since 2010 we have focused on driving up standards in education. English children are now the best readers in the Western world and are 11th in the world for maths, up from 27th when Labo
+								</code>
+							</pre>
+					</section>
+				</section>
+				<section>
+					<h4>To fine-tune or not to fine-tune?</h4>
+					<p align="left" style="font-size: large;">
+						Fine-tuning a language model is a common practice in natural language processing to adapt a pre-trained model to a specific task or domain. While fine-tuning can improve the performance of a model on a specific task, it also comes with its own set of benefits and challenges.
+					<p>
+						Benefits
+					</p>
+					<ul style="font-size: large;">
+						<li>Generally outperforms non-fine-tuned models, especially for specialized tasks</li>
+						<li>More consistent responses within the fine-tuned domain</li>
+						<li>Potentially lower risk within the fine-tuned domain</li>
+					</ul>
+					<p>
+						Challenges
+					</p>
+					<ul style="font-size: large;">
+						<li>Requires a large amount of high-quality training data</li>
+						<li>May overfit to the training data, leading to poor generalization</li>
+						<li>Time-consuming and computationally expensive</li>
+						<li>Might require periodic retraining to stay current</li>
+					</ul>
+				</p>
+				</section>
+				<section>
+					<h3>
+						What's next for RAG systems?
+					</h3>
+					<p>
+						<ul>
+							<li>Improving the scalability and efficiency of RAG systems</li>
+							<li>Integrating multi-modal information retrieval</li>
+							<li>Longer context windows will make the answers more accurate</li>
+							<li>Addressing privacy and security concerns</li>
+						</ul>
+					</p>
+				</section>
+				<section>
+					<h3>What have we covered?</h3>
+					<ul>
+						<li>RAG is a powerful system for retrieving information in a chat or question-answering format</li>
+						<li>There are a few limitations to the standard RAG system</li>
+						<li>Multiple methods can be used to improve the RAG system, including HyDE, query transformations, and contextual chunk headers</li>
+						<li>Evaluation is crucial for assessing the performance of a RAG system, and tools like Deepeval can help with this process</li>
+						<li>Fine-tuning and future directions for RAG systems</li>
+					</ul>
+				</section>
+				<section>
+					<img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWQ2czlsNmxveW84cjQ5MzAyajJjajJ6YXh1cGxucXV4bnA4ZXh2OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/XHVmD4RyXgSjd8aUMb/giphy.webp" alt="The End" style="width: 500px; height: auto;">
+					<p align="center" style="font-size: large;">
+						Thank you for your attention! Connect with me on LinkedIn by scanning the QR code below or visiting my profile at <a href="https://www.linkedin.com/in/natan-mish/">linkedin.com/in/natan-mish/</a>
+						</p>
+					<p>
+						<img src="images/QR_code.JPG" alt="QR Code" style="width: 150px; height: auto;">
+					</p>
 				</section>
 			</div>
 		</div>
