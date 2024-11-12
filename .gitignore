@@ -3,5 +3,6 @@ venv
 .env
 cache
 cache_contextual_chunk_headers
+cache_semantic_chunking
 notebooks/__pycache__/utils.cpython-310.pyc
 notebooks/.deepeval-cache.json

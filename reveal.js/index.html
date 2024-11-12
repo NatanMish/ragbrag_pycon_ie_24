@@ -41,24 +41,26 @@
 							<li>Hypothetical Document Embedding (HyDE)</li>
 							<li>Query Transformations</li>
 							<li>Contextual Chunk Headers</li>
+							<li>Semantic Chunking</li>
 						</ul>
-						<li>Evaluation</li>
-						<li>Other methods</li>
-						<li>Why not fine-tune?</li>
-						<li>Future of RAG</li>
+						<!-- <li>Evaluation</li> -->
+						<!-- <li>Other methods</li> -->
+						<!-- <li>Why not fine-tune?</li>
+						<li>Future of RAG</li> -->
 						<li>Q&A</li>
 					</ul>
+					<h4>Hopefully, something to learn for everyone!</h4>
 				</section>
 				<section>
 					<h2>About Me</h2>
 					<p align="left" style="font-size: x-large;">
-						Hello! I'm Natan Mish, a Machine Learning Engineer at <a href="https://www.zimmerbiomet.com/en">Zimmer Biomet</a>, where I work on developing and deploying machine learning models for medical devices. My academical background is in Data Science and Economics and have worked in various industries, including finance, telecommunications, and transportation.
+						Hello! I'm Natan Mish, a Machine Learning Engineer at <a href="https://www.zimmerbiomet.com/en">Zimmer Biomet</a>. My academical background is in Data Science and Economics and have worked in various industries, including finance, telecommunications, and transportation.
 					</p>
 					<p align="left" style="font-size: x-large;">
 						I am a member of the scoping committee for <a href="https://datakind.org.uk/">DataKind UK</a>, a charity that helps other charities use data science to improve their operations.
 					</p>
 					<p align="left" style="font-size: x-large;">
-						Python conferences are my favorite events, and I have spoken at <a href="https://pydata.org/london2024/">PyData London</a>, <a href="https://ep2024.europython.eu/">EuroPython</a> and this is my first time at PyCon Ireland. I like to learn and explore new technologies and share my knowledge with others.
+						Python conferences are my favorite events, and I have spoken at <a href="https://pydata.org/london2024/">PyData London</a>, <a href="https://ep2024.europython.eu/">EuroPython</a> and this is my first time at PyCon Ireland!
 					</p>
 					<h4>Scan to Connect</h4>
 					<img src="images/QR_code.JPG" alt="QR Code" style="width: 150px; height: auto;">
@@ -86,11 +88,11 @@
 							<li>Alternatively: Qdrant, Pinecone, Chroma</li>
 						</ul>
 						<li style="display: flex; align-items: center;">
-							Deepeval
-							<img src="https://media.licdn.com/dms/image/v2/D560BAQFogqXz2yr1VQ/company-logo_200_200/company-logo_200_200/0/1698938769821/confident_ai_logo?e=2147483647&v=beta&t=4Ot5C3a5yYpjerH4nltzMBWELrq0NQKRptBWo9mRaWI" alt="Deepeval Logo" style="width: 40px; height: auto; margin-left: 10px;">
+							OpenAI
+							<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2d3IW4R8PR4TO7Va-lOAV6PrrYh250bqJpw&s" alt="OpenAI Logo" style="width: 40px; height: auto; margin-left: 10px;">
 						</li>
 						<ul style="font-size: small;">
-							<li>Alternatively: ML Flow, LangSmith</li>
+							<li>Alternatively: Anthropic, Hugging Face</li>
 					</ul>
 				</section>
 				<section>
@@ -125,19 +127,15 @@
 						<ul>
 							<li>
 								<p>Medical</p>
-								<p style="font-size: medium;">Using patient medical history and current symptoms to generate a diagnosis</p>
 							</li>
 							<li>
 								<p>Legal</p>
-								<p style="font-size: medium;">Using legal documents and case law to generate a legal brief</p>
 							</li>
 							<li>
 								<p>Finance</p>
-								<p style="font-size: medium;">Using financial data, market trends, profit and loss statements to generate portfolio recommendations</p>
 							</li>
 							<li>
 								<p>Education</p>
-								<p style="font-size: medium;">Using student data, curriculum, and learning outcomes to generate personalized learning plans</p>
 							</li>
 						</ul>
 					</section>
@@ -154,6 +152,8 @@
 						<p>
 							<pre><code data-trim class="language-python" data-noescape data-line-numbers="">
 								from llama_index.core import Settings
+								# The embedding dimension is the size of the vector 
+								# representation of the text
 								EMBED_DIMENSION = 512
 
 								# Load environment variables from a .env file
@@ -273,7 +273,6 @@
 						<li>Inaccurate or Irrelevant Results</li>
 						<ul style="font-size: medium;">
 							<li>Missing Critical Information: Essential documents containing the answer may not be included in the top retrieval results</li>
-							<li>Incorrect Specificity: Responses may lack precision or fail to address the specific context of the query</li>
 						</ul>
 					<li>Domain Adaptability</li>
 						<ul style="font-size: medium;">
@@ -641,6 +640,106 @@
 				</section>
 				</section>
 				<section>
+					<section>
+						<h2>Semantic Chunking</h2>
+						<p align="left" style="font-size: large;">
+							Traditional text splitting methods often break documents at arbitrary points, potentially disrupting the flow of information and context. Semantic chunking addresses this issue by attempting to split text at more natural breakpoints, preserving semantic coherence within each chunk.
+						</p>
+						<p align="left" style="font-size: large;">
+							How does it work?
+						</p>
+						<p>
+							<ul style="font-size: large;">
+								<li>The text is first split into sentences using a regular expression</li>
+								<li>Sentences are then grouped into overlapping sets of n sentences each</li>
+								<li>Embeddings are generated for each group of n sentences using the provided embedding model</li>
+								<li>The cosine dissimilarity between each group and the next is calculated</li>
+								<li>If the dissimilarity exceeds a specified threshold, a new chunk is created</li>
+							</ul>
+					</section>
+					<section>
+						<h3>Base Splitter</h3>
+						<p>
+							<pre><code class="language-python" data-trim data-noescape data-line-numbers="12-15">
+								from llama_index.vector_stores.faiss import FaissVectorStore
+								from llama_index.core.text_splitter import SentenceSplitter
+								from llama_index.core.ingestion import IngestionPipeline
+
+								EMBED_DIMENSION = 512
+								CHUNK_SIZE = 250
+								CHUNK_OVERLAP = 25
+
+								faiss_index = faiss.IndexFlatL2(EMBED_DIMENSION)
+								vector_store = FaissVectorStore(faiss_index=faiss_index)
+								
+								text_splitter = SentenceSplitter(
+									chunk_size=CHUNK_SIZE,
+									chunk_overlap=CHUNK_OVERLAP
+								)
+								
+								pipeline = IngestionPipeline(
+									transformations=[
+										TextCleaner(),
+										text_splitter,
+									],
+									vector_store=vector_store,
+								)
+								
+								nodes = pipeline.run(documents=documents)
+								vector_store_index = VectorStoreIndex(nodes)
+								query_engine = vector_store_index.as_query_engine(similarity_top_k=2)
+							</code>
+							</pre>
+						</p>
+					</section>
+					<section>
+						<h3>Semantic Splitter</h3>
+						<p>
+							<pre><code class="language-python" data-trim data-noescape data-line-numbers="1-9">
+								semantic_splitter = SemanticSplitterNodeParser(
+									buffer_size=1,  # number of sentences to group together 
+									# when evaluating semantic similarity
+									breakpoint_percentile_threshold=95,  # The percentile of 
+									# cosine dissimilarity that must be exceeded between a 
+									# group of sentences and the next to form a node. The 
+									# smaller this number is, the more nodes will be generated
+									embed_model=Settings.embed_model
+								)
+								pipeline = IngestionPipeline(
+									transformations=[
+										TextCleaner(),
+										semantic_splitter,
+									],
+									vector_store=vector_store,
+								)
+							</code>
+						</pre>
+						</p>
+				</section>
+				<section>
+					<h3>What is the SNP's position on the EU? (Using the base splitter)</h3>
+					<p align="left" style="font-size: large;">
+					DEFENDING DEMOCRACY  AND HUMAN RIGHTS
+					The SNP stands on a strong record of defending Scotland’s democratic functions and institutions, and we will always stand up to promote and protect Scotland’s democracy and make sure that the people of Scotland’s voices are heard. SNP MPs will demand the UK Government:
+					Give the people of Scotland a say on their future. Demand the permanent transfer of legal power to the Scottish Parliament to determine  how Scotland is governed, including the  transfer of power to enable it to legislate for  a referendum.
+					End Westminster’s power grab by demanding the UK government repeal the reprehensible Internal Market Act. We are clear that UK ministers must not be able to act unilaterally across policy areas that are within devolved competencies, and will push for the Sewel Convention to be put on a proper statutory footing.
+					Support abolition of the undemocratic House of Lords.
+					</p>
+				</section>
+				<section>
+					<h3>What is the SNP's position on the EU? (Using the semantic splitter)</h3>
+					<p align="left" style="font-size: large;">
+						DECISIONS MADE IN SCOTLAND, FOR SCOTLAND.      27SNP General Election Manifesto  2024
+						SCOTLAND’S PLACE IN THE WORLD
+						We want to see an independent Scotland take its place in the international community; alongside the 193 other United Nations member states, able to join the European Union, with the powers necessary to protect our citizens and prosper in the global economy. We are determined that Scotland plays a positive and progressive role in international affairs through action and leadership. SNP MPs will call on the UK Government to:
+						Demand an immediate ceasefire in Gaza, release of hostages and end arms sales to Israel. We will continue to call on the UK Government to follow the lead of Ireland, Norway and Spain by immediately recognising Palestine as a state. We believe that recognising Palestine as a state in its own right is the only way to move towards a just and durable long-term peace, in the interests of both Palestinians and Israelis.
+						Stand by Ukraine and continue to strongly oppose the Russian invasion. We will continue to support Ukrainians who have settled in Scotland and will press the UK Government to extend visa rights whilst the conflict continues. We will do everything in our power  to see the restoration of peace and ensure Ukraine’s sovereignty, democracy, independence and territorial integrity is maintained. We will continue to back military support from the United Kingdom to Ukraine and will press the UK Government to ensure the sanctions regime against Russia is effective. Scrap Trident and invest the billions spent funding these immoral weapons in public services, like our NHS and schools and adequately funding conventional defence. The SNP has never and will never support the retention or renewal of Trident, and will press the UK government to meet their international obligations on nuclear disarmament.
+						Connect Scotland’s diaspora across  the globe by working with national and international partners to implement the  Scottish Connections Framework. Agree an EU-wide youth mobility scheme.  Despite the EU proposing a post-Brexit mobility scheme for young people, both the Tories and Labour rejected it within hours. The UK Government must stop failing young people and agree a scheme so that young people can benefit from the opportunities that living, working and studying in the EU can bring.
+						Immediately restore and maintain the UK international aid budget to 0.7%.
+					</p>
+				</section>
+				</section>
+				<!-- <section>
 					<h3>Other Methods for improving RAG</h3>
 					<ul>
 						<li>
@@ -668,16 +767,16 @@
 							Agent Assisted Retrieval
 						</li>
 					</ul>
-				</section>
-				<section>
+				</section> -->
+				<!-- <section>
 					<section>
+						<section>
+							<img src="https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0cc9ca6d-a73c-47ff-a1a6-b88b7a0b651b_387x585.jpeg" alt="Evaluation" style="width: auto; height: 500px;">
+						</section>
 						<h2>Evaluation</h2>
 						<p align="left">
 							Evaluating the performance of a RAG system is essential to ensure that it meets the desired objectives and provides accurate and relevant information. A few guidelines for evaluating a RAG system include:
 						</p>
-						</section>
-						<section>
-							<img src="https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0cc9ca6d-a73c-47ff-a1a6-b88b7a0b651b_387x585.jpeg" alt="Evaluation" style="width: auto; height: 500px;">
 						</section>
 						<section>
 							<h3>Benchmark Creation</h3>
@@ -856,8 +955,8 @@
 								</code>
 							</pre>
 					</section>
-				</section>
-				<section>
+				</section> -->
+				<!-- <section>
 					<h4>To fine-tune or not to fine-tune?</h4>
 					<p align="left" style="font-size: large;">
 						Fine-tuning a language model is a common practice in natural language processing to adapt a pre-trained model to a specific task or domain. While fine-tuning can improve the performance of a model on a specific task, it also comes with its own set of benefits and challenges.
@@ -892,22 +991,25 @@
 							<li>Addressing privacy and security concerns</li>
 						</ul>
 					</p>
-				</section>
+				</section> -->
 				<section>
 					<h3>What have we covered?</h3>
 					<ul>
-						<li>RAG is a powerful system for retrieving information in a chat or question-answering format</li>
-						<li>There are a few limitations to the standard RAG system</li>
-						<li>Multiple methods can be used to improve the RAG system, including HyDE, query transformations, and contextual chunk headers</li>
-						<li>Evaluation is crucial for assessing the performance of a RAG system, and tools like Deepeval can help with this process</li>
-						<li>Fine-tuning and future directions for RAG systems</li>
+						<li>What is RAG good for?</li>
+						<li>Limitations of RAG systems</li>
+						<li>How to improve RAG systems</li>
+						<!-- <li>Evaluation is crucial for assessing the performance of a RAG system, and tools like Deepeval can help with this process</li>
+						<li>Fine-tuning and future directions for RAG systems</li> -->
 					</ul>
 				</section>
 				<section>
-					<img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWQ2czlsNmxveW84cjQ5MzAyajJjajJ6YXh1cGxucXV4bnA4ZXh2OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/XHVmD4RyXgSjd8aUMb/giphy.webp" alt="The End" style="width: 500px; height: auto;">
+					<img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWQ2czlsNmxveW84cjQ5MzAyajJjajJ6YXh1cGxucXV4bnA4ZXh2OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/XHVmD4RyXgSjd8aUMb/giphy.webp" alt="The End" style="width: 400px; height: auto;">
+					<p align="center" style="font-size: large;">
+						For more RAG techniques, check out this GitHub repository: <a href="https://github.com/NirDiamant/RAG_Techniques/">github.com/NirDiamant/RAG_Techniques/</a>
+					</p>
 					<p align="center" style="font-size: large;">
 						Thank you for your attention! Connect with me on LinkedIn by scanning the QR code below or visiting my profile at <a href="https://www.linkedin.com/in/natan-mish/">linkedin.com/in/natan-mish/</a>
-						</p>
+					</p>
 					<p>
 						<img src="images/QR_code.JPG" alt="QR Code" style="width: 150px; height: auto;">
 					</p>
